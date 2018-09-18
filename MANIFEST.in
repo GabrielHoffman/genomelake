@@ -1,5 +1,6 @@
 include README.md
 include LICENSE
 include genomelake/util.pyx
+include genomelake/ambiguous_nucleotide.pyx
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
