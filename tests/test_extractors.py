@@ -111,3 +111,61 @@ def test_bigwig_extractor(test_bigwig_and_intervals):
     extractor = BigwigExtractor(bw_path)
     data = extractor(intervals)
     assert (data == expected_data).all()
+
+# Gabriel Hoffman
+# add test functions
+from genomelake import util
+from genomelake.util import one_hot_encode_sequence
+from genomelake.util import one_hot_encode_sequence_v2
+from genomelake.util import one_hot_encode_sequence_v3
+from genomelake.util import one_hot_encode_sequence_ambig
+import numpy as np
+
+import cProfile
+import timeit
+
+# test that different encoding functions give same results
+def test_nucleotide_encoding():
+  # set sequence 
+  seq = 'ATCGatcgN'
+  # initialize numpy arrays
+  encode1 = np.zeros([len(seq),4], "float32")
+  encode2 = np.zeros([len(seq),4], "float32")
+  encode3 = np.zeros([len(seq),4], "float32")
+  encode4 = np.zeros([len(seq),4], "float32")
+  # run encoding functions
+  one_hot_encode_sequence(seq.upper(), encode1[:,:])
+  one_hot_encode_sequence_v2(seq.upper(), encode2[:,:])
+  one_hot_encode_sequence_v3(seq.upper(), encode3[:,:])
+  encode4 = one_hot_encode_sequence_ambig(seq.upper(), encode4[:,:])
+  # test 
+  assert np.array_equal(encode1, encode2) == True
+  assert np.array_equal(encode1, encode3) == True
+  assert np.array_equal(encode1, encode4) == True
+
+# test timings
+# Profile.run is not working with seq variables 
+def test_nucleotide_encoding_runtime():
+  # set sequence 
+  seq = 'ATCGatcgN'
+  for i in range(0, 1):
+    seq = seq + seq
+  # print(seq)
+  # initialize numpy arrays
+  encode1 = np.zeros([len(seq),4], "float32")
+  encode2 = np.zeros([len(seq),4], "float32")
+  encode3 = np.zeros([len(seq),4], "float32")
+  encode4 = np.zeros([len(seq),4], "float32")
+  # timings
+  # cProfile.run("[one_hot_encode_sequence(seq.upper(), encode1[:,:]) for x in range(10000)]")
+  # cProfile.run("[one_hot_encode_sequence_v2(seq.upper(), encode2[:,:]) for x in range(10000)]")
+    # cProfile.run("[one_hot_encode_sequence_v3(seq.upper(), encode3[:,:]) for x in range(10000)]")
+  # cProfile.run("[one_hot_encode_sequence_ambig(seq.upper(), encode4[:,:]) for x in range(10000)]")
+
+
+test_nucleotide_encoding()
+
+test_nucleotide_encoding_runtime()
+
+
+
